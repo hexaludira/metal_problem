@@ -14,6 +14,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::resource('blog',BlogController::class);
+
+Route::get('halo', function(){
+	return "Ini view baru";
+});
+
+Route::get('report', 'ReportController@index');
+
+Route::get('/{any}', function(){
+	return view('metal.metal');
+})->where('any','.*');
 // Route::get('/', function () {
 //     return view('welcome');
 // });
