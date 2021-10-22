@@ -54,7 +54,7 @@ return [
 
     'url' => env('APP_URL', 'http://10.10.41.246'),
 
-    'asset_url' => env('ASSET_URL', 'http://10.10.41.246/laravel_crud/public'),
+    'asset_url' => env('ASSET_URL', 'http://10.10.41.246/metal_problem/public'),
 
     /*
     |--------------------------------------------------------------------------

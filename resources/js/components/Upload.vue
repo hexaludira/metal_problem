@@ -73,7 +73,7 @@
       		},
       		showAlertImg(){
       			Swal.fire(
-      				'File terlalu besar'
+      				'Maaf, Ukuran file terlalu besar ya..'
       			);
       		},
       		reset(){

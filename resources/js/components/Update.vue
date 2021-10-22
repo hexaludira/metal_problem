@@ -10,7 +10,8 @@
 						<div class="form-group">
 							<label><b>Tanggal</b></label>
 							<!-- <input type="textfield" class="form-control" v-model="form.date" required> -->
-							<datepicker :format="format" :input-class="content" :typeable="typeable" :placeholder="placeholder" v-model="form.date" required></datepicker>
+							<!-- <datepicker :format="format" :input-class="content" :typeable="typeable" :placeholder="placeholder" v-model="form.date" required></datepicker> -->
+							<VueDatePicker v-model="form.date" fullscreen-mobile/>
 						</div>
 						<div class="form-group">
 							<label><b>Detail</b></label>

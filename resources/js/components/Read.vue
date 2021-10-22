@@ -24,9 +24,13 @@
 				    <div class="mx-auto"></div>
 				    
 
-				    <div class="mx-2 my-1">
+				    <!-- <div class="mx-2 my-1">
 				    	<router-link class="btn btn-secondary w-100" to="/Upload">Upload</router-link>
-				    </div>
+				    </div> -->
+
+				    <!-- <div class="mx-2 my-1">
+				    	<button class="btn btn-secondary w-100" @click='showImage()'>Show Image</button>
+				    </div> -->
 				    
 				    <div class="mx-2 my-1">
 				    	<router-link class="btn btn-primary w-100" to="/create">+ Tambah</router-link>
@@ -79,7 +83,8 @@
 							<td style="width: auto;">{{metal.remark}}</td>
 							<td style="width: auto;">
 								<router-link class="btn btn-warning" :to="'/detail/'+metal.id">Edit</router-link>
-								<button class="btn btn-danger" v-on:click="deleteData(metal.id)">Delete</button>
+								<button class="btn btn-danger" v-on:click="deleteData(metal.id)">Hapus</button>
+								<button class="btn btn-success" v-on:click="showImage(metal.img_name)">Gambar</button>
 							</td>
 						</tr>
 					</tbody>				
@@ -141,6 +146,18 @@
 			// 	}, 'smooth');
 				
 			// }
+			showImage(img_name){
+				Swal.fire(
+				{
+					title: img_name,
+					//html: '<img id="preview" src="http://10.10.41.246/rest_ci/upload/"' + img_name
+					imageUrl: 'http://10.10.41.246/rest_ci/upload/' + img_name,
+					imageWidth: 500,
+					imageHeight: 400
+					
+				}
+				);
+			}
 		},
 		computed: {
 			filtered() {
@@ -149,11 +166,7 @@
 				});
 			}
 		},
-		// mounted: function() {
-		// 	this.$nextTick(function() {
-  //     		this.initToTopButton();
-  //   		});
-		// }
+		
 	};
 </script>
 <style type="text/css">

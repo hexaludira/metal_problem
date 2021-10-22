@@ -7,11 +7,15 @@
 				<div class="container border p-3">
 					<h4>Buat data baru</h4>
 				<br>
-				<form @submit.prevent="addData()">
+				<form enctype="multipart/form-data" method="post" @submit.prevent="addData(); uploadImage();">
 					<div class="form-group">
 						<label><b>Tanggal</b></label>
 						<!-- <input type="date" class="form-control" placeholder="yyyy-mm-dd" v-model="form.date" required> -->
-						<datepicker :format="format" :input-class="content" :typeable="typeable" :placeholder="placeholder" v-model="form.date" required></datepicker>
+						<!-- <datepicker :format="format" :input-class="content" :typeable="typeable" :placeholder="placeholder" v-model="form.date" :highlighted="highlighted" required></datepicker> -->
+						<!-- <vc-calendar></vc-calendar>
+						<vc-date-picker v-model='selectedDate' /> -->
+						<VueDatePicker v-model="form.date" placeholder="Pilih tanggal" fullscreen-mobile/>
+						
 					</div>
 					<div class="form-group">
 						<label><b>Detail</b></label>
@@ -35,6 +39,14 @@
 						<label><b>Keterangan</b></label>
 						<input type="textfield" class="form-control" placeholder="Keterangan" v-model="form.keterangan">
 					</div>
+					<div class="form-group">
+						<label><b>Gambar</b></label>
+						<input type="file" ref="file" accept="image/*" @change="previewImage" class="form-control-file" id="image" name="image">
+						<br>
+						<img :src="preview" class="img-fluid" />
+						<!-- <input type="textfield" v-model="form.img_name"> -->
+					</div>
+
 					<button class="btn btn-primary w-50">Submit</button>
 					
 					<router-link class="btn btn-secondary w-20" to="/"><- Back</router-link>
@@ -47,20 +59,28 @@
 </template>
 <script>
 	import Datepicker from 'vuejs-datepicker';
+	
+	
+
+
+	//const today = new Date();
 
 	export default {
 		components: {
 			Datepicker
+
 		},
 		data (){
 			return{
 				form:{
-					date: '',
+					date: null,
 					detail:'',
 					lokasi:'',
 					status:'',
-					keterangan:''
+					keterangan:'',
+					img_name:''
 				},
+				//highlighted: new Date(2021,10,12),
 				format: "dd MMMM yyyy",
 				//calendarbutton: true,
 				style: true,
@@ -68,6 +88,12 @@
 				placeholder: "Tanggal",
 				content: "form-control",
 				typeable: true,
+				selectedDate: null,
+				//for upload file
+				file: '',
+				preview: null,
+				image: null,
+
 			}
 		},
 
@@ -79,13 +105,73 @@
 					detail: this.form.detail,
 					location: this.form.lokasi,
 					status: this.form.status,
-					remark: this.form.keterangan
+					remark: this.form.keterangan,
+					img_name: this.form.img_name
 				})
 				.then(response => {
 					console.log(response);
 					//console.log(moment("response.data[70].date").format("yyyy-MM-DD"));
 					this.$router.push("/");
 				});
+			},
+			showAlert() {
+				
+	       	//Swal.fire('coba');
+	        //this.$swal('Berhasil');
+	        Swal.fire({
+               title: 'Berhasil!',
+               text: 'Data berhasil diupload',
+               icon: 'success',
+               confirmButtonText: 'Baiklah'
+             });
+   		},
+			showAlertImg(){
+   			Swal.fire(
+   				'Maaf, Ukuran file terlalu besar ya..'
+   			);
+      	},
+
+			reset(){
+				const input = this.$refs.file;
+				input.type = 'text';
+				input.type = 'file';
+			},
+
+			previewImage(event){
+				var input = event.target;
+				if (input.files) {
+					var reader = new FileReader();
+					reader.onload = (e) => {
+						this.preview = e.target.result;
+					}
+					this.image = input.files[0];
+					this.form.img_name = input.files[0].name;
+					reader.readAsDataURL(input.files[0]);
+				}
+			},
+			
+			uploadImage() {
+				//alert('coba coba');
+				this.file = this.$refs.file.files[0];
+
+				var formData = new FormData();
+
+				if (this.file.size > 3000000) {
+					this.showAlertImg();
+				} else {
+					formData.append('image', this.file);
+
+					axios.post('http://10.10.41.246/rest_ci/index.php/Upload', formData, {
+						headers : {
+							'Content-Type' : 'multipart/form-data'
+						}
+					}).then(response=> {
+						this.showAlert();
+			    		//this.reset();
+			    		this.preview = null;
+			    		console.log(response);
+					});
+				}
 			}
 		}
 	};
