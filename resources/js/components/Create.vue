@@ -10,6 +10,7 @@
 				<form enctype="multipart/form-data" method="post" @submit.prevent="addData(); uploadImage();">
 					<div class="form-group">
 						<p>kampretttt</p>
+						<p>wawan jossss</p>
 						<label><b>Tanggal</b></label>
 						<!-- <input type="date" class="form-control" placeholder="yyyy-mm-dd" v-model="form.date" required> -->
 						<!-- <datepicker :format="format" :input-class="content" :typeable="typeable" :placeholder="placeholder" v-model="form.date" :highlighted="highlighted" required></datepicker> -->
