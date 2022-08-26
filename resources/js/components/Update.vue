@@ -29,11 +29,19 @@
 								<option value="Kirim Vendor">Kirim Vendor</option>
 								<option value="Sensor datang">Sensor datang</option>
 								<option value="LP selesai service">LP selesai service</option>
+								<option value="Ganti LP">Ganti LP</option>
 							</select>	
 						</div>
 						<div class="form-group">
 							<label><b>Keterangan</b></label>
 							<input type="textfield" class="form-control" placeholder="Keterangan" v-model="form.keterangan">
+						</div>
+						<div class="form-group">
+							<label><b>Gambar</b></label>
+							<input type="file" ref="file" accept="image/*" @change="previewImage" class="form-control-file" id="image" name="image">
+							<br>	
+							<img :src="preview" class="img-fluid" />
+							
 						</div>
 						<button class="btn btn-primary w-50">Update</button>
 						<router-link class="btn btn-secondary w-20" to="/"><- Back</router-link>
@@ -59,7 +67,8 @@
 					detail: '',
 					lokasi: '',
 					status: '',
-					keterangan: ''
+					keterangan: '',
+					img_name:''
 				},
 				format: "dd MMMM yyyy",
 				//calendarbutton: true,

@@ -28,9 +28,9 @@
 				    	<router-link class="btn btn-secondary w-100" to="/Upload">Upload</router-link>
 				    </div> -->
 
-				    <!-- <div class="mx-2 my-1">
-				    	<button class="btn btn-secondary w-100" @click='showImage()'>Show Image</button>
-				    </div> -->
+				    <div class="mx-2 my-1">
+				    	<button class="btn btn-secondary w-100" @click='sendTelegram()'>Send Message</button>
+				    </div>
 				    
 				    <div class="mx-2 my-1">
 				    	<router-link class="btn btn-primary w-100" to="/create">+ Tambah</router-link>
@@ -147,16 +147,35 @@
 				
 			// }
 			showImage(img_name){
-				Swal.fire(
-				{
-					title: img_name,
-					//html: '<img id="preview" src="http://10.10.41.246/rest_ci/upload/"' + img_name
-					imageUrl: 'http://10.10.41.246/rest_ci/upload/' + img_name,
-					imageWidth: 500,
-					imageHeight: 400
-					
+				if(img_name == null) {
+					Swal.fire({
+						icon: 'error',
+						title: 'Waduh..',
+						text: 'Gambar tidak ditemukan :('
+					});
+				} else {
+						Swal.fire(
+					{
+						//title: img_name,
+						//html: '<img id="preview" src="http://10.10.41.246/rest_ci/upload/"' + img_name
+						imageUrl: 'http://10.10.41.246/rest_ci/upload/' + img_name,
+						imageWidth: 500,
+						imageHeight: 400
+						
+					});
 				}
-				);
+				
+			},
+			showLanguage(){
+				var userLang = navigator.language || navigator.userLanguage;
+				Swal.fire("The language is " + userLang);
+			},
+			sendTelegram(){
+				axios.post('https://api.telegram.org/bot2111744206:AAFS3bqpOif1TqNc71yZLhX18Cr9cbKM7Ew/sendMessage',{
+					chat_id : -719194981,
+					text: "Coba kirim pesan ke metalBot\nApakah berhasil?\nSemoga Iya"
+
+				})
 			}
 		},
 		computed: {

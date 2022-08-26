@@ -9,6 +9,7 @@
 				<br>
 				<form enctype="multipart/form-data" method="post" @submit.prevent="addData(); uploadImage();">
 					<div class="form-group">
+						<p>kampretttt</p>
 						<label><b>Tanggal</b></label>
 						<!-- <input type="date" class="form-control" placeholder="yyyy-mm-dd" v-model="form.date" required> -->
 						<!-- <datepicker :format="format" :input-class="content" :typeable="typeable" :placeholder="placeholder" v-model="form.date" :highlighted="highlighted" required></datepicker> -->
@@ -33,6 +34,7 @@
 							<option value="Kirim Vendor">Kirim Vendor</option>
 							<option value="Sensor datang">Sensor datang</option>
 							<option value="LP selesai service">LP selesai service</option>
+							<option value="Ganti LP">Ganti LP</option>
 						</select>
 					</div>
 					<div class="form-group">
@@ -58,7 +60,7 @@
 	</div>
 </template>
 <script>
-	import Datepicker from 'vuejs-datepicker';
+	//import Datepicker from 'vuejs-datepicker';
 	
 	
 
@@ -66,10 +68,7 @@
 	//const today = new Date();
 
 	export default {
-		components: {
-			Datepicker
-
-		},
+		
 		data (){
 			return{
 				form:{
@@ -89,30 +88,54 @@
 				content: "form-control",
 				typeable: true,
 				selectedDate: null,
+				//locale: {lang: 'en'},
 				//for upload file
-				file: '',
+				file: null,
 				preview: null,
 				image: null,
-
+				
 			}
 		},
 
 		methods: {
-			
 			addData() {
-				axios.post("http://10.10.41.246/rest_ci/index.php/List_Problem", {
-					date: moment(this.form.date).format('DD MMMM yyyy'),
-					detail: this.form.detail,
-					location: this.form.lokasi,
-					status: this.form.status,
-					remark: this.form.keterangan,
-					img_name: this.form.img_name
-				})
-				.then(response => {
-					console.log(response);
-					//console.log(moment("response.data[70].date").format("yyyy-MM-DD"));
-					this.$router.push("/");
-				});
+				//this.file = this.$refs.file.files[0];
+
+				if(this.$refs.file.files.size > 4000000){
+					console.log("File terlalu besar");
+				} else if (this.$refs.file.files[0] == null){
+						axios.post("http://10.10.41.246/rest_ci/index.php/List_Problem", {
+						date: moment(this.form.date).format('DD MMMM yyyy'),
+						detail: this.form.detail,
+						location: this.form.lokasi,
+						status: this.form.status,
+						remark: this.form.keterangan,
+						//img_name: this.form.img_name
+					})
+					.then(response => {
+						console.log(response);
+						//console.log(moment("response.data[70].date").format("yyyy-MM-DD"));
+						this.showAlert();
+						this.sendTelegram();
+						this.$router.push("/");
+					});
+				} else {
+					axios.post("http://10.10.41.246/rest_ci/index.php/List_Problem", {
+						date: moment(this.form.date).format('DD MMMM yyyy'),
+						detail: this.form.detail,
+						location: this.form.lokasi,
+						status: this.form.status,
+						remark: this.form.keterangan,
+						img_name: this.form.img_name
+					})
+					.then(response => {
+						console.log(response);
+						this.sendTelegram();
+						//console.log(moment("response.data[70].date").format("yyyy-MM-DD"));
+						this.$router.push("/");
+					});
+				}
+	
 			},
 			showAlert() {
 				
@@ -156,7 +179,7 @@
 
 				var formData = new FormData();
 
-				if (this.file.size > 3000000) {
+				if (this.file.size > 4000000) {
 					this.showAlertImg();
 				} else {
 					formData.append('image', this.file);
@@ -172,6 +195,14 @@
 			    		console.log(response);
 					});
 				}
+			},
+			sendTelegram(){
+				
+				axios.post('https://api.telegram.org/bot2111744206:AAFS3bqpOif1TqNc71yZLhX18Cr9cbKM7Ew/sendMessage?parse_mode=Markdown',{
+					chat_id : -719194981,
+					text: "*==New Problem==*\nLocation: " + this.form.lokasi + "\nDetail: " + this.form.detail + "\nStatus: " + this.form.status + "\nRemark: " + this.form.keterangan
+
+				})
 			}
 		}
 	};

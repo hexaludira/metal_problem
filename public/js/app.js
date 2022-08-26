@@ -1871,7 +1871,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuejs-datepicker */ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js");
 //
 //
 //
@@ -1931,12 +1930,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
- //const today = new Date();
-
+//
+//import Datepicker from 'vuejs-datepicker';
+//const today = new Date();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  components: {
-    Datepicker: vuejs_datepicker__WEBPACK_IMPORTED_MODULE_0__["default"]
-  },
   data: function data() {
     return {
       form: {
@@ -1956,8 +1953,9 @@ __webpack_require__.r(__webpack_exports__);
       content: "form-control",
       typeable: true,
       selectedDate: null,
+      //locale: {lang: 'en'},
       //for upload file
-      file: '',
+      file: null,
       preview: null,
       image: null
     };
@@ -1966,18 +1964,43 @@ __webpack_require__.r(__webpack_exports__);
     addData: function addData() {
       var _this = this;
 
-      axios.post("http://10.10.41.246/rest_ci/index.php/List_Problem", {
-        date: moment(this.form.date).format('DD MMMM yyyy'),
-        detail: this.form.detail,
-        location: this.form.lokasi,
-        status: this.form.status,
-        remark: this.form.keterangan,
-        img_name: this.form.img_name
-      }).then(function (response) {
-        console.log(response); //console.log(moment("response.data[70].date").format("yyyy-MM-DD"));
+      //this.file = this.$refs.file.files[0];
+      if (this.$refs.file.files.size > 4000000) {
+        console.log("File terlalu besar");
+      } else if (this.$refs.file.files[0] == null) {
+        axios.post("http://10.10.41.246/rest_ci/index.php/List_Problem", {
+          date: moment(this.form.date).format('DD MMMM yyyy'),
+          detail: this.form.detail,
+          location: this.form.lokasi,
+          status: this.form.status,
+          remark: this.form.keterangan //img_name: this.form.img_name
 
-        _this.$router.push("/");
-      });
+        }).then(function (response) {
+          console.log(response); //console.log(moment("response.data[70].date").format("yyyy-MM-DD"));
+
+          _this.showAlert();
+
+          _this.sendTelegram();
+
+          _this.$router.push("/");
+        });
+      } else {
+        axios.post("http://10.10.41.246/rest_ci/index.php/List_Problem", {
+          date: moment(this.form.date).format('DD MMMM yyyy'),
+          detail: this.form.detail,
+          location: this.form.lokasi,
+          status: this.form.status,
+          remark: this.form.keterangan,
+          img_name: this.form.img_name
+        }).then(function (response) {
+          console.log(response);
+
+          _this.sendTelegram(); //console.log(moment("response.data[70].date").format("yyyy-MM-DD"));
+
+
+          _this.$router.push("/");
+        });
+      }
     },
     showAlert: function showAlert() {
       //Swal.fire('coba');
@@ -2021,7 +2044,7 @@ __webpack_require__.r(__webpack_exports__);
       this.file = this.$refs.file.files[0];
       var formData = new FormData();
 
-      if (this.file.size > 3000000) {
+      if (this.file.size > 4000000) {
         this.showAlertImg();
       } else {
         formData.append('image', this.file);
@@ -2037,6 +2060,12 @@ __webpack_require__.r(__webpack_exports__);
           console.log(response);
         });
       }
+    },
+    sendTelegram: function sendTelegram() {
+      axios.post('https://api.telegram.org/bot2111744206:AAFS3bqpOif1TqNc71yZLhX18Cr9cbKM7Ew/sendMessage?parse_mode=Markdown', {
+        chat_id: -719194981,
+        text: "*==New Problem==*\nLocation: " + this.form.lokasi + "\nDetail: " + this.form.detail + "\nStatus: " + this.form.status + "\nRemark: " + this.form.keterangan
+      });
     }
   }
 });
@@ -2205,12 +2234,30 @@ __webpack_require__.r(__webpack_exports__);
     // 	}, 'smooth');
     // }
     showImage: function showImage(img_name) {
-      Swal.fire({
-        title: img_name,
-        //html: '<img id="preview" src="http://10.10.41.246/rest_ci/upload/"' + img_name
-        imageUrl: 'http://10.10.41.246/rest_ci/upload/' + img_name,
-        imageWidth: 500,
-        imageHeight: 400
+      if (img_name == null) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Waduh..',
+          text: 'Gambar tidak ditemukan :('
+        });
+      } else {
+        Swal.fire({
+          //title: img_name,
+          //html: '<img id="preview" src="http://10.10.41.246/rest_ci/upload/"' + img_name
+          imageUrl: 'http://10.10.41.246/rest_ci/upload/' + img_name,
+          imageWidth: 500,
+          imageHeight: 400
+        });
+      }
+    },
+    showLanguage: function showLanguage() {
+      var userLang = navigator.language || navigator.userLanguage;
+      Swal.fire("The language is " + userLang);
+    },
+    sendTelegram: function sendTelegram() {
+      axios.post('https://api.telegram.org/bot2111744206:AAFS3bqpOif1TqNc71yZLhX18Cr9cbKM7Ew/sendMessage', {
+        chat_id: -719194981,
+        text: "Coba kirim pesan ke metalBot\nApakah berhasil?\nSemoga Iya"
       });
     }
   },
@@ -2239,6 +2286,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuejs-datepicker */ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js");
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2497,24 +2552,23 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
-/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
 /* harmony import */ var vue_axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-axios */ "./node_modules/vue-axios/dist/vue-axios.es5.js");
 /* harmony import */ var vue_axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue_axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var vue_moment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-moment */ "./node_modules/vue-moment/dist/vue-moment.js");
 /* harmony import */ var vue_moment__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_moment__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vuejs-datepicker */ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js");
-/* harmony import */ var _mathieustan_vue_datepicker__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @mathieustan/vue-datepicker */ "./node_modules/@mathieustan/vue-datepicker/dist/vue-datepicker.esm.js");
-/* harmony import */ var _mathieustan_vue_datepicker_dist_vue_datepicker_min_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @mathieustan/vue-datepicker/dist/vue-datepicker.min.css */ "./node_modules/@mathieustan/vue-datepicker/dist/vue-datepicker.min.css");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _components_App_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/App.vue */ "./resources/js/components/App.vue");
-/* harmony import */ var _components_Create_vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/Create.vue */ "./resources/js/components/Create.vue");
-/* harmony import */ var _components_Read_vue__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/Read.vue */ "./resources/js/components/Read.vue");
-/* harmony import */ var _components_Update_vue__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/Update.vue */ "./resources/js/components/Update.vue");
-/* harmony import */ var _components_upload_vue__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./components/upload.vue */ "./resources/js/components/upload.vue");
+/* harmony import */ var _mathieustan_vue_datepicker__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @mathieustan/vue-datepicker */ "./node_modules/@mathieustan/vue-datepicker/dist/vue-datepicker.esm.js");
+/* harmony import */ var _mathieustan_vue_datepicker_dist_vue_datepicker_min_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @mathieustan/vue-datepicker/dist/vue-datepicker.min.css */ "./node_modules/@mathieustan/vue-datepicker/dist/vue-datepicker.min.css");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _components_App_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/App.vue */ "./resources/js/components/App.vue");
+/* harmony import */ var _components_Create_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/Create.vue */ "./resources/js/components/Create.vue");
+/* harmony import */ var _components_Read_vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/Read.vue */ "./resources/js/components/Read.vue");
+/* harmony import */ var _components_Update_vue__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/Update.vue */ "./resources/js/components/Update.vue");
+/* harmony import */ var _components_upload_vue__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/upload.vue */ "./resources/js/components/upload.vue");
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js"); //window.Vue = require('vue');
 
 
@@ -2528,7 +2582,7 @@ window.Swal = __webpack_require__(/*! sweetalert2/dist/sweetalert2.js */ "./node
 
 
 
-
+ //import Datepicker from 'vuejs-datepicker';
 
 
  //import VCalendar from 'v-calendar';
@@ -2536,10 +2590,10 @@ window.Swal = __webpack_require__(/*! sweetalert2/dist/sweetalert2.js */ "./node
  //import VueSweetalert2 from 'vue-sweetalert2';
 //import moment from 'moment';
 
-vue__WEBPACK_IMPORTED_MODULE_7__["default"].use(vue_router__WEBPACK_IMPORTED_MODULE_8__["default"], (vue_axios__WEBPACK_IMPORTED_MODULE_0___default()), (axios__WEBPACK_IMPORTED_MODULE_1___default()), moment, (vue_moment__WEBPACK_IMPORTED_MODULE_2___default()), vuejs_datepicker__WEBPACK_IMPORTED_MODULE_3__["default"], (sweetalert2__WEBPACK_IMPORTED_MODULE_6___default()), _mathieustan_vue_datepicker__WEBPACK_IMPORTED_MODULE_4__["default"]); //Vue.use(VCalendar, {componentPrefix: 'vc'});
+vue__WEBPACK_IMPORTED_MODULE_6__["default"].use(vue_router__WEBPACK_IMPORTED_MODULE_7__["default"], (vue_axios__WEBPACK_IMPORTED_MODULE_0___default()), (axios__WEBPACK_IMPORTED_MODULE_1___default()), moment, (vue_moment__WEBPACK_IMPORTED_MODULE_2___default()), (sweetalert2__WEBPACK_IMPORTED_MODULE_5___default())); //Vue.use(VCalendar, {componentPrefix: 'vc'});
 
-vue__WEBPACK_IMPORTED_MODULE_7__["default"].use(_mathieustan_vue_datepicker__WEBPACK_IMPORTED_MODULE_4__["default"], {
-  component: '@mathieustan/vue-datepicker'
+vue__WEBPACK_IMPORTED_MODULE_6__["default"].use(_mathieustan_vue_datepicker__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  lang: 'en'
 }); // import file yang dibuat tadi
 
 
@@ -2551,27 +2605,27 @@ vue__WEBPACK_IMPORTED_MODULE_7__["default"].use(_mathieustan_vue_datepicker__WEB
 var routes = [{
   name: 'Read',
   path: '/',
-  component: _components_Read_vue__WEBPACK_IMPORTED_MODULE_11__["default"]
+  component: _components_Read_vue__WEBPACK_IMPORTED_MODULE_10__["default"]
 }, {
   name: 'Create',
   path: '/create',
-  component: _components_Create_vue__WEBPACK_IMPORTED_MODULE_10__["default"]
+  component: _components_Create_vue__WEBPACK_IMPORTED_MODULE_9__["default"]
 }, {
   name: 'Update',
   path: '/detail/:id',
-  component: _components_Update_vue__WEBPACK_IMPORTED_MODULE_12__["default"]
+  component: _components_Update_vue__WEBPACK_IMPORTED_MODULE_11__["default"]
 }, {
   name: 'Upload',
   path: '/upload',
-  component: _components_upload_vue__WEBPACK_IMPORTED_MODULE_13__["default"]
+  component: _components_upload_vue__WEBPACK_IMPORTED_MODULE_12__["default"]
 }];
-var router = new vue_router__WEBPACK_IMPORTED_MODULE_8__["default"]({
+var router = new vue_router__WEBPACK_IMPORTED_MODULE_7__["default"]({
   mode: 'hash',
   routes: routes
 });
-new vue__WEBPACK_IMPORTED_MODULE_7__["default"](vue__WEBPACK_IMPORTED_MODULE_7__["default"].util.extend({
+new vue__WEBPACK_IMPORTED_MODULE_6__["default"](vue__WEBPACK_IMPORTED_MODULE_6__["default"].util.extend({
   router: router
-}, _components_App_vue__WEBPACK_IMPORTED_MODULE_9__["default"])).$mount("#app");
+}, _components_App_vue__WEBPACK_IMPORTED_MODULE_8__["default"])).$mount("#app");
 
 /***/ }),
 
@@ -66755,6 +66809,10 @@ var render = function() {
                     _vm._v(" "),
                     _c("option", { attrs: { value: "LP selesai service" } }, [
                       _vm._v("LP selesai service")
+                    ]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "Ganti LP" } }, [
+                      _vm._v("Ganti LP")
                     ])
                   ]
                 )
@@ -66912,6 +66970,21 @@ var render = function() {
               },
               [
                 _c("div", { staticClass: "mx-auto" }),
+                _vm._v(" "),
+                _c("div", { staticClass: "mx-2 my-1" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-secondary w-100",
+                      on: {
+                        click: function($event) {
+                          return _vm.sendTelegram()
+                        }
+                      }
+                    },
+                    [_vm._v("Send Message")]
+                  )
+                ]),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -67260,6 +67333,10 @@ var render = function() {
                     _vm._v(" "),
                     _c("option", { attrs: { value: "LP selesai service" } }, [
                       _vm._v("LP selesai service")
+                    ]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "Ganti LP" } }, [
+                      _vm._v("Ganti LP")
                     ])
                   ]
                 )

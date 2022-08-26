@@ -14,7 +14,7 @@ import VueRouter from 'vue-router';
 import VueAxios from 'vue-axios';
 import Axios from 'axios';
 import VueMoment from 'vue-moment';
-import Datepicker from 'vuejs-datepicker';
+//import Datepicker from 'vuejs-datepicker';
 import NewDatePicker from '@mathieustan/vue-datepicker';
 import '@mathieustan/vue-datepicker/dist/vue-datepicker.min.css';
 //import VCalendar from 'v-calendar';
@@ -22,9 +22,9 @@ import Swal from "sweetalert2";
 //import VueSweetalert2 from 'vue-sweetalert2';
 //import moment from 'moment';
 
-Vue.use(VueRouter,VueAxios,Axios,moment,VueMoment, Datepicker, Swal, NewDatePicker);
+Vue.use(VueRouter,VueAxios,Axios,moment,VueMoment, Swal);
 //Vue.use(VCalendar, {componentPrefix: 'vc'});
-Vue.use(NewDatePicker, {component: '@mathieustan/vue-datepicker'});
+Vue.use(NewDatePicker, {lang: 'en'});
 
 // import file yang dibuat tadi
 import App from './components/App.vue';
